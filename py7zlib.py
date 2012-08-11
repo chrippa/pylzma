@@ -69,46 +69,48 @@ except NameError:
     # Python 3.x
     def unicode(s, encoding):
         return s
+
+    long = int
 else:
     def bytes(s, encoding):
         return s
 
 READ_BLOCKSIZE                   = 16384
 
-MAGIC_7Z                         = unhexlify('377abcaf271c')  # '7z\xbc\xaf\x27\x1c'
+MAGIC_7Z                         = unhexlify(b'377abcaf271c')  # '7z\xbc\xaf\x27\x1c'
 
-PROPERTY_END                     = unhexlify('00')  # '\x00'
-PROPERTY_HEADER                  = unhexlify('01')  # '\x01'
-PROPERTY_ARCHIVE_PROPERTIES      = unhexlify('02')  # '\x02'
-PROPERTY_ADDITIONAL_STREAMS_INFO = unhexlify('03')  # '\x03'
-PROPERTY_MAIN_STREAMS_INFO       = unhexlify('04')  # '\x04'
-PROPERTY_FILES_INFO              = unhexlify('05')  # '\x05'
-PROPERTY_PACK_INFO               = unhexlify('06')  # '\x06'
-PROPERTY_UNPACK_INFO             = unhexlify('07')  # '\x07'
-PROPERTY_SUBSTREAMS_INFO         = unhexlify('08')  # '\x08'
-PROPERTY_SIZE                    = unhexlify('09')  # '\x09'
-PROPERTY_CRC                     = unhexlify('0a')  # '\x0a'
-PROPERTY_FOLDER                  = unhexlify('0b')  # '\x0b'
-PROPERTY_CODERS_UNPACK_SIZE      = unhexlify('0c')  # '\x0c'
-PROPERTY_NUM_UNPACK_STREAM       = unhexlify('0d')  # '\x0d'
-PROPERTY_EMPTY_STREAM            = unhexlify('0e')  # '\x0e'
-PROPERTY_EMPTY_FILE              = unhexlify('0f')  # '\x0f'
-PROPERTY_ANTI                    = unhexlify('10')  # '\x10'
-PROPERTY_NAME                    = unhexlify('11')  # '\x11'
-PROPERTY_CREATION_TIME           = unhexlify('12')  # '\x12'
-PROPERTY_LAST_ACCESS_TIME        = unhexlify('13')  # '\x13'
-PROPERTY_LAST_WRITE_TIME         = unhexlify('14')  # '\x14'
-PROPERTY_ATTRIBUTES              = unhexlify('15')  # '\x15'
-PROPERTY_COMMENT                 = unhexlify('16')  # '\x16'
-PROPERTY_ENCODED_HEADER          = unhexlify('17')  # '\x17'
+PROPERTY_END                     = unhexlify(b'00')  # '\x00'
+PROPERTY_HEADER                  = unhexlify(b'01')  # '\x01'
+PROPERTY_ARCHIVE_PROPERTIES      = unhexlify(b'02')  # '\x02'
+PROPERTY_ADDITIONAL_STREAMS_INFO = unhexlify(b'03')  # '\x03'
+PROPERTY_MAIN_STREAMS_INFO       = unhexlify(b'04')  # '\x04'
+PROPERTY_FILES_INFO              = unhexlify(b'05')  # '\x05'
+PROPERTY_PACK_INFO               = unhexlify(b'06')  # '\x06'
+PROPERTY_UNPACK_INFO             = unhexlify(b'07')  # '\x07'
+PROPERTY_SUBSTREAMS_INFO         = unhexlify(b'08')  # '\x08'
+PROPERTY_SIZE                    = unhexlify(b'09')  # '\x09'
+PROPERTY_CRC                     = unhexlify(b'0a')  # '\x0a'
+PROPERTY_FOLDER                  = unhexlify(b'0b')  # '\x0b'
+PROPERTY_CODERS_UNPACK_SIZE      = unhexlify(b'0c')  # '\x0c'
+PROPERTY_NUM_UNPACK_STREAM       = unhexlify(b'0d')  # '\x0d'
+PROPERTY_EMPTY_STREAM            = unhexlify(b'0e')  # '\x0e'
+PROPERTY_EMPTY_FILE              = unhexlify(b'0f')  # '\x0f'
+PROPERTY_ANTI                    = unhexlify(b'10')  # '\x10'
+PROPERTY_NAME                    = unhexlify(b'11')  # '\x11'
+PROPERTY_CREATION_TIME           = unhexlify(b'12')  # '\x12'
+PROPERTY_LAST_ACCESS_TIME        = unhexlify(b'13')  # '\x13'
+PROPERTY_LAST_WRITE_TIME         = unhexlify(b'14')  # '\x14'
+PROPERTY_ATTRIBUTES              = unhexlify(b'15')  # '\x15'
+PROPERTY_COMMENT                 = unhexlify(b'16')  # '\x16'
+PROPERTY_ENCODED_HEADER          = unhexlify(b'17')  # '\x17'
 
-COMPRESSION_METHOD_COPY          = unhexlify('00')  # '\x00'
-COMPRESSION_METHOD_LZMA          = unhexlify('03')  # '\x03'
-COMPRESSION_METHOD_CRYPTO        = unhexlify('06')  # '\x06'
-COMPRESSION_METHOD_MISC          = unhexlify('04')  # '\x04'
-COMPRESSION_METHOD_MISC_ZIP      = unhexlify('0401')  # '\x04\x01'
-COMPRESSION_METHOD_MISC_BZIP     = unhexlify('0402')  # '\x04\x02'
-COMPRESSION_METHOD_7Z_AES256_SHA256 = unhexlify('06f10701')  # '\x06\xf1\x07\x01'
+COMPRESSION_METHOD_COPY          = unhexlify(b'00')  # '\x00'
+COMPRESSION_METHOD_LZMA          = unhexlify(b'03')  # '\x03'
+COMPRESSION_METHOD_CRYPTO        = unhexlify(b'06')  # '\x06'
+COMPRESSION_METHOD_MISC          = unhexlify(b'04')  # '\x04'
+COMPRESSION_METHOD_MISC_ZIP      = unhexlify(b'0401')  # '\x04\x01'
+COMPRESSION_METHOD_MISC_BZIP     = unhexlify(b'0402')  # '\x04\x02'
+COMPRESSION_METHOD_7Z_AES256_SHA256 = unhexlify(b'06f10701')  # '\x06\xf1\x07\x01'
 
 # number of seconds between 1601/01/01 and 1970/01/01 (UTC)
 # used to adjust 7z FILETIME to Python timestamp
@@ -174,7 +176,7 @@ class Base(object):
     def _readBoolean(self, file, count, checkall=0):
         if checkall:
             alldefined = file.read(1)
-            if alldefined != unhexlify('00'):
+            if alldefined != unhexlify(b'00'):
                 return [True] * count
             
         result = []
@@ -304,9 +306,9 @@ class UnpackInfo(Base):
         self.numfolders = self._read64Bit(file)
         self.folders = []
         external = file.read(1)
-        if external == unhexlify('00'):
+        if external == unhexlify(b'00'):
             self.folders = [Folder(file) for x in range(self.numfolders)]
-        elif external == unhexlify('01'):
+        elif external == unhexlify(b'01'):
             self.datastreamidx = self._read64Bit(file)
         else:
             raise FormatError('0x00 or 0x01 expected but %s found' % repr(external))
@@ -452,7 +454,7 @@ class FilesInfo(Base):
                 antifiles = self._readBoolean(buffer, numemptystreams)
             elif typ == PROPERTY_NAME:
                 external = buffer.read(1)
-                if external != unhexlify('00'):
+                if external != unhexlify(b'00'):
                     self.dataindex = self._read64Bit(buffer)
                     # XXX: evaluate external
                     raise NotImplementedError
@@ -461,7 +463,7 @@ class FilesInfo(Base):
                     name = ''
                     while True:
                         ch = buffer.read(2)
-                        if ch == unhexlify('0000'):
+                        if ch == unhexlify(b'0000'):
                             f['filename'] = name
                             break
                         name += ch.decode('utf-16')
